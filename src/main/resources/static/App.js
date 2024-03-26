@@ -56,19 +56,17 @@ export default class App {
                 },
                 body: JSON.stringify(data)
             });
-
-            if(response.ok)
+            
+            const { success,message,code,result } = await response.json();
+            if(success)
             {
                 // Tạo thông báo thành công
-                const successMessage = `Insert success: ${txtId} - ${txtName}`;
-                alert(successMessage);
+                alert(`Insserted successfully: ${txtId} - ${txtName}`);
                 await this._loadEmployees();
             }
             else
             {
-                alert("Insert fail");
-                const errorData = await response.json();
-                alert("Error: " + errorData.message);
+                alert(`Code: ${code} - ${message}`);
             }
         } catch (error) {
             console.log(error);
