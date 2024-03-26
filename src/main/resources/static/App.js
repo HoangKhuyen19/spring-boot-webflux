@@ -67,7 +67,7 @@ export default class App {
                 alert(`Code: ${code} - ${message}`);
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
 
     }
@@ -111,7 +111,27 @@ export default class App {
                 alert(`Code: ${code} - ${message}`);
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
+        }
+    }
+
+    async _onDelete(id) {
+        try {
+            let response = await fetch(`/spring-boot-webflux/employees/${id}`, { method: "DELETE",headers: {
+                "Content-Type": "application/json"
+            } 
+        });
+
+            const { success, message, code } =  await response.json();
+
+            if (success) {
+                alert(`Delete successfully employee ${id}`);
+                await this._loadEmployees();
+            } else {
+                alert(`Code: ${code} - ${message}`);
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 
@@ -154,10 +174,17 @@ export default class App {
             btnUpdate.addEventListener("click", () => {
                 this._employeeForm.querySelector("#txtId").value = id;
                 this._employeeForm.querySelector("#txtName").value = name;
-            })
+            });
 
             btnDelete.textContent = "Delete";
             btnDelete.type = "button";
+            btnDelete.addEventListener("click", () => {
+                if (window.confirm(`Are you sure you want to delete this employee ${id} ?`)) {
+                    this._onDelete(id);
+                } else {
+                    return;
+                }
+            })
 
             actionCol.appendChild(btnUpdate);
             actionCol.appendChild(btnDelete);

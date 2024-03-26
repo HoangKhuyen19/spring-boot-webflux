@@ -38,11 +38,11 @@ public class EmployeeRepository {
                 );
                 System.out.println("Added employee with ID: " + id);
                 
-                // try {
-                //     Thread.sleep(100);
-                // }
-                // catch (Exception e) {
-                // }
+                try {
+                    Thread.sleep(100);
+                }
+                catch (Exception e) {
+                }
             }
         );
     }
@@ -70,6 +70,7 @@ public class EmployeeRepository {
         for(Employee employee : this.employees) {
             if(employee.getId() == id) {
                 employees.remove(id);
+                return;
             }
         }
     }
