@@ -38,11 +38,11 @@ public class EmployeeRepository {
                 );
                 System.out.println("Added employee with ID: " + id);
                 
-                try {
-                    Thread.sleep(100);
-                }
-                catch (Exception e) {
-                }
+                // try {
+                //     Thread.sleep(100);
+                // }
+                // catch (Exception e) {
+                // }
             }
         );
     }

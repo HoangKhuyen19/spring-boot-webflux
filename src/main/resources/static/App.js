@@ -5,6 +5,8 @@ export default class App {
         this._searchForm = document.querySelector("#searchForm");
         this._tblEmployee = document.querySelector("#tblEmployee");
 
+        
+
         this._employeeForm.querySelector("#btnInsert")
             .addEventListener(
                 "click",
@@ -27,9 +29,53 @@ export default class App {
     }
 
     // Methods:
-    _onInsert() {
+    async _onInsert() {
+        //Lấy element từ form
+        this._txtID = document.getElementById("txtId");
+        this._txtName = document.getElementById("txtName");
+
+        //Lưu thông tin vào biến
+        let txtId = this._txtID.value;
+        let txtName = this._txtName.value;
+
+        if(txtId == "" || txtName == "") {
+            alert("Please enter id and name");
+            return;
+        }
+
+        let data = {
+            id: txtId,
+            name: txtName
+        };
+
+        try {
+            const response = await fetch("/spring-boot-webflux/employees", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            if(response.ok)
+            {
+                // Tạo thông báo thành công
+                const successMessage = `Insert success: ${txtId} - ${txtName}`;
+                alert(successMessage);
+                await this._loadEmployees();
+            }
+            else
+            {
+                alert("Insert fail");
+                const errorData = await response.json();
+                alert("Error: " + errorData.message);
+            }
+        } catch (error) {
+            console.log(error);
+        }
         
     }
+
 
     _onUpdate() {
 
