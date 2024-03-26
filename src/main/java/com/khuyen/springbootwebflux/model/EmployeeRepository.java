@@ -66,6 +66,14 @@ public class EmployeeRepository {
         employees.add(employee);
     }
 
+    public void delete(int id) {
+        for(Employee employee : this.employees) {
+            if(employee.getId() == id) {
+                employees.remove(id);
+            }
+        }
+    }
+
     public void cancelGenerateEmployees() {
         if(!generateEmployeesDisposable.isDisposed()){
             generateEmployeesDisposable.dispose();
