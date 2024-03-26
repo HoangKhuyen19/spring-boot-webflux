@@ -120,7 +120,7 @@ public class EmployeeController {
 
     @DeleteMapping("/generateEmployees")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Response<Void>> delelte(@PathVariable String id) {
+    public Mono<Response<Void>> cancelGenerateEmployees() {
 
         Response<Void> response = new Response<Void>();
         
@@ -141,6 +141,34 @@ public class EmployeeController {
         
         response.setSuccess(true);
 
+        return Mono.just(response);
+    }
+
+    @DeleteMapping("/{idStr}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<Response<Void>> delete(@PathVariable String idStr){
+        Response<Void> response = new Response<>();
+
+        int id;
+        try {
+            id = Integer.parseInt(idStr);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage("Id must be an interger");
+            response.setCode("ID_INVALID");
+            return Mono.just(response);
+        }
+
+        if(employeeRepository.get(id) == null) {
+            response.setSuccess(false);
+            response.setMessage("Employee with given id doesn't exist!");
+            response.setCode("EMPLOYEE_NOT_EXIST");
+            return Mono.just(response);
+        }
+
+        employeeRepository.delete(id);
+
+        response.setSuccess(true);
         return Mono.just(response);
     }
 }
