@@ -5,14 +5,14 @@ export default class App {
         this._searchForm = document.querySelector("#searchForm");
         this._tblEmployee = document.querySelector("#tblEmployee");
 
-        
+
 
         this._employeeForm.querySelector("#btnInsert")
             .addEventListener(
                 "click",
                 this._onInsert.bind(this)
             );
-        
+
         this._employeeForm.querySelector("#btnUpdate")
             .addEventListener(
                 "click",
@@ -24,7 +24,7 @@ export default class App {
                 "click",
                 this._loadEmployees.bind(this)
             );
-        
+
         this._loadEmployees();
     }
 
@@ -38,7 +38,7 @@ export default class App {
         let txtId = this._txtID.value;
         let txtName = this._txtName.value;
 
-        if(txtId == "" || txtName == "") {
+        if (txtId == "" || txtName == "") {
             alert("Please enter id and name");
             return;
         }
@@ -56,27 +56,63 @@ export default class App {
                 },
                 body: JSON.stringify(data)
             });
-            
-            const { success,message,code,result } = await response.json();
-            if(success)
-            {
+
+            const { success, message, code } = await response.json();
+            if (success) {
                 // Tạo thông báo thành công
                 alert(`Insserted successfully: ${txtId} - ${txtName}`);
                 await this._loadEmployees();
             }
-            else
-            {
+            else {
                 alert(`Code: ${code} - ${message}`);
             }
         } catch (error) {
             console.log(error);
         }
-        
+
     }
 
 
-    _onUpdate() {
+    async _onUpdate() {
+        //Lấy element từ form
+        this._txtID = document.getElementById("txtId");
+        this._txtName = document.getElementById("txtName");
 
+        //Lưu thông tin vào biến
+        let txtId = this._txtID.value;
+        let txtName = this._txtName.value;
+
+        if (txtId == "" || txtName == "") {
+            alert("Please enter id and name");
+            return;
+        }
+
+        let data = {
+            id: txtId,
+            name: txtName
+        };
+
+        try {
+            const response = await fetch(`/spring-boot-webflux/employees/${txtId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            const { success, message, code } = await response.json();
+            if (success) {
+                // Tạo thông báo thành công
+                alert(`Update successfully: ${txtId} - ${txtName}`);
+                await this._loadEmployees();
+            }
+            else {
+                alert(`Code: ${code} - ${message}`);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     async _loadEmployees() {
@@ -112,9 +148,13 @@ export default class App {
 
             idCol.textContent = id;
             nameCol.textContent = name;
-            
+
             btnUpdate.textContent = "Update"
             btnUpdate.type = "button";
+            btnUpdate.addEventListener("click", () => {
+                this._employeeForm.querySelector("#txtId").value = id;
+                this._employeeForm.querySelector("#txtName").value = name;
+            })
 
             btnDelete.textContent = "Delete";
             btnDelete.type = "button";
