@@ -65,8 +65,6 @@ public class EmployeeRepository {
     public List<Employee> getByKeyword(String keyword) {
         List<Employee> result = new ArrayList<>();
         for(Employee employee : employees) {
-            System.err.println(employee.getName());
-            System.out.println("Chuỗi so sánh" + employee.toString().toLowerCase() + keyword);
             if(
                 employee.toString()
                 .toLowerCase()
@@ -74,7 +72,6 @@ public class EmployeeRepository {
                     keyword.toLowerCase()
                 ) 
             ) {
-                System.err.println("Tìm thấy"+employee.getName());
                 result.add(employee);
             }
         }
