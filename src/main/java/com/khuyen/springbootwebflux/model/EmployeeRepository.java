@@ -62,6 +62,25 @@ public class EmployeeRepository {
         return null;
     }
 
+    public List<Employee> getByKeyword(String keyword) {
+        List<Employee> result = new ArrayList<>();
+        for(Employee employee : employees) {
+            System.err.println(employee.getName());
+            System.out.println("Chuỗi so sánh" + employee.toString().toLowerCase() + keyword);
+            if(
+                employee.toString()
+                .toLowerCase()
+                .contains(
+                    keyword.toLowerCase()
+                ) 
+            ) {
+                System.err.println("Tìm thấy"+employee.getName());
+                result.add(employee);
+            }
+        }
+
+        return result;
+    }
     public void insert(Employee employee) {
         employees.add(employee);
     }

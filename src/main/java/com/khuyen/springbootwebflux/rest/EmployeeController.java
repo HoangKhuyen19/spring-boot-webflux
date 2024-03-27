@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -62,11 +63,17 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public Mono<Response<List<Employee>>> getAllEmployee() {
+    public Mono<Response<List<Employee>>> getByKeyword(@RequestParam(name="keyword", required = false) String keyword) {
         Response<List<Employee>> response = new Response<>();
-        response.setCode(HttpStatus.OK.toString());
         response.setSuccess(true);
-        response.setResult(employeeRepository.getAll());
+        
+        if (keyword == null || keyword.isEmpty()) {
+            response.setResult(employeeRepository.getAll());
+        } else {
+           
+            response.setResult(employeeRepository.getByKeyword(keyword));
+        }
+
         return Mono.just(response);
     }
 

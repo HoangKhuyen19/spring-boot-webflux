@@ -25,7 +25,20 @@ export default class App {
                 this._loadEmployees.bind(this)
             );
 
+        this._searchForm.querySelector("#btnSearch")
+            .addEventListener(
+                "click",
+                this._onSearch.bind(this)
+            );
+
+        this._searchForm.querySelector("#btnCancelGenerate")
+            .addEventListener(
+                "click",
+                this._onCancelGenerate.bind(this)
+            );
+
         this._loadEmployees();
+        this._setEmployee({ id: 0, name: "" });
     }
 
     // Methods:
@@ -117,12 +130,13 @@ export default class App {
 
     async _onDelete(id) {
         try {
-            let response = await fetch(`/spring-boot-webflux/employees/${id}`, { method: "DELETE",headers: {
-                "Content-Type": "application/json"
-            } 
-        });
+            let response = await fetch(`/spring-boot-webflux/employees/${id}`, {
+                method: "DELETE", headers: {
+                    "Content-Type": "application/json"
+                }
+            });
 
-            const { success, message, code } =  await response.json();
+            const { success, message, code } = await response.json();
 
             if (success) {
                 alert(`Delete successfully employee ${id}`);
@@ -171,20 +185,19 @@ export default class App {
 
             btnUpdate.textContent = "Update"
             btnUpdate.type = "button";
-            btnUpdate.addEventListener("click", () => {
-                this._employeeForm.querySelector("#txtId").value = id;
-                this._employeeForm.querySelector("#txtName").value = name;
-            });
+            btnUpdate.addEventListener("click", (() => {
+                this._setEmployee({ id, name })
+            }).bind(this));
 
             btnDelete.textContent = "Delete";
             btnDelete.type = "button";
-            btnDelete.addEventListener("click", () => {
+            btnDelete.addEventListener("click", (() => {
                 if (window.confirm(`Are you sure you want to delete this employee ${id} ?`)) {
                     this._onDelete(id);
                 } else {
                     return;
                 }
-            })
+            }).bind(this))
 
             actionCol.appendChild(btnUpdate);
             actionCol.appendChild(btnDelete);
@@ -195,5 +208,54 @@ export default class App {
 
             tbl.appendChild(row);
         }
+    }
+
+    async _onSearch() {
+        const keyword = this._searchForm.querySelector("#txtKeyword").value;
+
+        if (keyword === '') {
+            alert("Keyword can't be empty!");
+            return;
+        }
+
+        const response = await fetch(
+            `/spring-boot-webflux/employees?keyword=${keyword}`
+        );
+
+        const { success, message, result } = await response.json();
+
+        if (success) {
+            this._showEmployees(result);
+        }
+        else {
+            alert(message);
+        }
+    }
+
+    async _onCancelGenerate() {
+        const response = await fetch("/spring-boot-webflux/employees/generateEmployees",
+        {
+            method: "DELETE"
+        })
+
+        const { success, message } = await response.json();
+
+        if (success) {
+            alert("Employee auto generator cancelled successfully!");
+        }
+        else {
+            alert(message);
+        }
+    }
+
+    _setEmployee(employee) {
+        if (!employee) {
+            return;
+        }
+
+        this._employee = employee;
+
+        this._employeeForm.querySelector("#txtId").value = this._employee.id;
+        this._employeeForm.querySelector("#txtName").value = this._employee.name;
     }
 }
