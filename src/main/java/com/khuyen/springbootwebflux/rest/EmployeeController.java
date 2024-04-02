@@ -23,63 +23,112 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/employees")
 public class EmployeeController {
-    // Field
-    private final EmployeeRepository employeeRepository;
 
     // Constructor:
     public EmployeeController() {
-        this.employeeRepository = EmployeeRepository.getInstance();
     }
 
     @GetMapping("/{idStr}")
     public Mono<Response<Employee>> getEmployeeById(@PathVariable String idStr) {
-       return employeeRepository.get(idStr);
+        Response<Employee> response = new Response<>();
+
+        try {
+            Employee employee = EmployeeRepository
+            .getInstance()
+            .get(idStr);
+            response.setResult(employee);
+            response.setSuccess(true);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+        }
+
+        return Mono.just(response);
     }
 
     @GetMapping
-    public Mono<Response<List<Employee>>> getByKeyword(@RequestParam(name="keyword", required = false) String keyword) {
-        return (
-            keyword == null 
-            ? employeeRepository.getAll()
-            : employeeRepository.getByKeyword(keyword)
-        );
+    public Mono<Response<List<Employee>>> getByKeyword(
+            @RequestParam(name = "keyword", required = false) String keyword) {
+        Response<List<Employee>> response = new Response<>();
+
+        try {
+            response.setResult(
+                (
+                    keyword == null
+                    ? EmployeeRepository.getInstance().getAll()
+                    : EmployeeRepository.getInstance().getByKeyword(keyword)
+                )
+            );
+            response.setSuccess(true);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+        }
+
+        return Mono.just(response);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Response<Void>> insert(@RequestBody Employee employee) {
-        return employeeRepository.insert(employee);
+        Response<Void> response = new Response<>();
+
+        try {
+            EmployeeRepository.getInstance().insert(employee);
+            response.setSuccess(true);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+        }
+
+        return Mono.just(response);
     }
 
     @PutMapping("/{idStr}")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Response<Void>> update(@PathVariable String idStr, @RequestBody Employee employee) {
-        return employeeRepository.update(idStr, employee);
+        Response<Void> response = new Response<>();
+
+        try {
+            EmployeeRepository.getInstance().update(idStr, employee);
+            response.setSuccess(true);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+        }
+
+        return Mono.just(response);
     }
 
     @DeleteMapping("/generateEmployees")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Response<Void>> cancelGenerateEmployees() {
+        Response<Void> response = new Response<>();
 
-        return employeeRepository.cancelGenerateEmployees();
+        try {
+            EmployeeRepository.getInstance().cancelGenerateEmployees();
+        }
+        catch (Error e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+        }
+
+        return Mono.just(response);
     }
 
     @DeleteMapping("/{idStr}")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Response<Void>> delete(@PathVariable String idStr){
-        return employeeRepository.delete(idStr);
-    }
+    public Mono<Response<Void>> delete(@PathVariable String idStr) {
+        Response<Void> response = new Response<>();
 
-    @GetMapping("/test")
-    public Mono test() {
-        
-        return Mono.fromSupplier(()->{
-            throw new RuntimeException();
-        })
-        .onErrorResume(
-            e -> {
-                return Mono.just("Error");
-            }
-        );
+        try {
+            EmployeeRepository.getInstance().delete(idStr);
+            response.setSuccess(true);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+        }
+
+        return Mono.just(response);
     }
 }
